@@ -1,0 +1,42 @@
+package com.example.loftier.minesweeper;
+
+import android.app.Service;
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.IBinder;
+
+public class BackgroundAudioService extends Service {
+    MediaPlayer music_player;
+
+    public BackgroundAudioService() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        music_player = MediaPlayer.create(getApplicationContext(),R.raw.background_music);
+        music_player.setLooping(true);
+
+
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        music_player.start();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        music_player.stop();
+        music_player.release();
+        super.onDestroy();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+}
