@@ -2,11 +2,15 @@ package com.example.loftier.minesweeper;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 
 public class BackgroundAudioService extends Service {
+
     MediaPlayer music_player;
+    SharedPreferences setting_pref;
+
 
     public BackgroundAudioService() {
     }
@@ -17,13 +21,15 @@ public class BackgroundAudioService extends Service {
         music_player = MediaPlayer.create(getApplicationContext(),R.raw.background_music);
         music_player.setLooping(true);
 
+        setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
 
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        music_player.start();
+        if(setting_pref.getBoolean("volume",false))
+            music_player.start();
         return super.onStartCommand(intent, flags, startId);
     }
 

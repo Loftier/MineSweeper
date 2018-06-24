@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.loftier.minesweeper">
-    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -22,8 +23,7 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".PlayAsGuest" />
         <activity android:name=".SignUp" />
-        <activity android:name=".Game">
-        </activity>
+        <activity android:name=".Game" />
         <activity android:name=".Settings" />
         <activity
             android:name=".GameOption"
@@ -33,7 +33,10 @@
         <service
             android:name=".BackgroundAudioService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".Help" />
+        <activity android:name=".Scores"></activity>
     </application>
 
 </manifest>

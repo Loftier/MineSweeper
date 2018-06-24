@@ -10,6 +10,9 @@
         <item>
             Expert
         </item>
+        <item>
+            GrandMaster
+        </item>
     </string-array>
     <string name="title_activity_game_option">GameOption</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>

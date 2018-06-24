@@ -26,6 +26,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
     SharedPreferences setting_pref;
     Vibrator vibrator;
     SharedPreferences.Editor editor;
+    int vol = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,18 +82,22 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        Toast.makeText(this, ""+i+" "+b, Toast.LENGTH_SHORT).show();
-        music.music_player.setVolume(100,100);
-        editor.putBoolean("volume",true);
+        if(i>0)
+            editor.putBoolean("volume",true);
+        else
+            editor.putBoolean("volume",false);
+        editor.apply();
+        vol = i;
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        music.music_player.setVolume(vol,vol);
+        Toast.makeText(this, seekBar.getProgress()+"%", Toast.LENGTH_SHORT).show();
 
     }
 }

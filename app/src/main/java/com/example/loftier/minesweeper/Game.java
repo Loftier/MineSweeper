@@ -5,13 +5,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -25,7 +30,7 @@ import android.widget.Toast;
 
 import java.util.Random;
 
-public class Game extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class Game extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnLongClickListener {
 
     //****Declaration****
     TextView mines_count;
@@ -35,15 +40,19 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     GridLayout layout;
     Switch flag;
     MediaPlayer winning_sound, bomb_sound;
-    int [][] value = new int[8][8];
-    boolean[][] access = new boolean[8][8];
+    int row = 12, column = 7, no_of_mines = 10;     //  12*7(84)10,    18*11(196)25,     24*15(360)50,     30*19(570)80
+    float width_size = 8f, height_size = 15f;       //  8*15,          12*22,            16*29,            20*36
+
+    int [][] value = new int[row][column];
+    boolean[][] access = new boolean[row][column];
     Random random;
-    private int mine=9, count = 0, flag_count = 6, flag_display = 6;
+    private int mine=9, count = 0, flag_count = no_of_mines, flag_display = no_of_mines;
     boolean first=true, flag_on_off=false;
     private long ctime;
     Vibrator vibrator;
     SharedPreferences setting_pref;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,13 +70,13 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
 
         //****Initializing Widgets****
-        btn = new Button[8][8];
+        btn = new Button[row][column];
         smiley = findViewById(R.id.idbtnsmiley);
         settings_menu = findViewById(R.id.idibtnsettings);
         flag = findViewById(R.id.idbtnflag);
         random = new Random();
         layout = findViewById(R.id.idglgamelayout);
-        layout.setColumnCount(8);
+        layout.setColumnCount(column);
         time = findViewById(R.id.idchtime);
         mines_count = findViewById(R.id.idtvminescount);
         winning_sound = MediaPlayer.create(this,R.raw.gameover);
@@ -76,17 +85,26 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         //****Adding Properties****
         mines_count.setText(flag_display + "");
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++) {
     /*
-            String str = "idbtn"+(i+1);
-            int id = getResources().getIdentifier(str,"id",getPackageName());
-            btn[i] = findViewById(id);
+                String str = "idbtn"+(i+1);
+                int id = getResources().getIdentifier(str,"id",getPackageName());
+                btn[i] = findViewById(id);
     */
                 btn[i][j] = new Button(this);
                 btn[i][j].setOnClickListener(this);
+                btn[i][j].setOnLongClickListener(this);
+                int width = getWindowManager().getDefaultDisplay().getWidth();
+                int height = getWindowManager().getDefaultDisplay().getHeight();
+                //btn[i][j].setGravity(Gravity.CENTER);
                 btn[i][j].setBackgroundResource(R.drawable.buttonshape);
-                layout.addView(btn[i][j], 80, 80);
+                btn[i][j].setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                btn[i][j].setTypeface(Typeface.SERIF);
+                btn[i][j].setTypeface(btn[i][j].getTypeface(), Typeface.BOLD);
+                //btn[i][j].setGravity(Gravity.LEFT);
+
+                layout.addView(btn[i][j], (int) (width/width_size), (int) (height/height_size));
                 access[i][j] = true;
             }
         }
@@ -95,8 +113,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         flag.setOnCheckedChangeListener(this);
         smiley.setOnClickListener(this);
         settings_menu.setOnClickListener(this);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++) {
                 btn[i][j].setOnClickListener(this);
             }
         }
@@ -108,38 +126,13 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         if(view instanceof Button) {                                //****Operations on Buttons
             if (setting_pref.getBoolean("vibration",false))
                 vibrator.vibrate(30);
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
+            for (int i = 0; i < row; i++) {
+                for (int j = 0; j < column; j++) {
                     if (view == btn[i][j]) {
                         if (flag_on_off){
-                            if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.flag).getConstantState()) {
-                                btn[i][j].setBackgroundResource(R.drawable.buttonshape);
-                                mines_count.setText(++flag_display + "");
-                                if (value[i][j] == mine) {
-                                    flag_count++;
-
-                                }
-                            }
-                            else
-                            if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState() && flag_display>0) {
-                                btn[i][j].setBackgroundResource(R.drawable.flag);
-                                mines_count.setText(--flag_display + "");
-                                if (value[i][j] == mine) {
-                                    flag_count--;
-                                    if (flag_count == 0) {
-                                        for (int a = 0; a < 8; a++)
-                                            for (int b = 0; b < 8; b++) {
-                                                btn[a][b].setClickable(false);
-                                            }
-                                        win_game();
-                                    }
-                                }
-                            }
-                            else{
-                                Toast.makeText(this, "No flags available", Toast.LENGTH_SHORT).show();
-                            }
+                            adding_flag(i,j);
                         }
-                        else{
+                        else if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState()){
                             if (first) {
                                 minesPosition(i, j);
                                 first = false;
@@ -190,17 +183,17 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     //****Adding values to buttons****
     void minesPosition(int a, int b) {
         //****Setting Mines****
-        while (count < 6) {
-            int r = random.nextInt(8);
-            int c = random.nextInt(8);
+        while (count < no_of_mines) {
+            int r = random.nextInt(row);
+            int c = random.nextInt(column);
             if (value[r][c] == mine || (r==a && c==b))
                 continue;
             value[r][c] = mine;
             count++;
         }
         //****Setting neighboring mines count****
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=0; i<row; i++){
+            for (int j=0; j<column; j++){
                 if(value[i][j]!=mine){
                     value[i][j] = settingNumbers(i,j);
                 }
@@ -214,7 +207,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         for(int m=i-1;m<i+2;m++){
             for(int n=j-1;n<j+2;n++){
                 if(!(m==i && n==j)){
-                    if(m>=0 && m<8 && n>=0 && n<8){
+                    if(m>=0 && m<row && n>=0 && n<column){
                         if(value[m][n]==mine)
                             no_of_mines++;
                     }
@@ -228,8 +221,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     void display_all(int m, int n){
         if (setting_pref.getBoolean("vibration",false))
             vibrator.vibrate(100);
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=0; i<row; i++){
+            for (int j=0; j<column; j++){
                 if(value[i][j]!=mine){
                     btn[i][j].setText(value[i][j]+"");
                     coloringTheNumbers(i,j);
@@ -288,9 +281,11 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         if(value[i][j]!=0){
             return;
         }
-        for(int m=i-1;m<i+2;m++) {
-            for (int n = j - 1; n < j + 2; n++) {
-                if(m>=0 && m<8 && n>=0 && n<8 && access[m][n]) {
+        for(int m=i-1; m<i+2; m++) {
+            for (int n = j-1; n<j+2; n++) {
+                if(m>=0 && m<row && n>=0 && n<column && access[m][n]) {
+                    if (btn[m][n].getBackground().getConstantState() == getResources().getDrawable(R.drawable.flag).getConstantState())
+                        continue;
                     access[m][n]=false;
                     showNeighboringPositions(m, n);
                     btn[m][n].setText(value[m][n] + "");
@@ -325,8 +320,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             vibrator.vibrate(100);
         double t = (double)-ctime/1000.0;
         showMessage("\t\t Congratulations!!!", "You Won. \n" + "Time: " + t + "secs");
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=0; i<row; i++){
+            for (int j=0; j<column; j++){
                 if(value[i][j] == mine){
                     btn[i][j].setBackgroundResource(R.drawable.flag);
                     btn[i][j].setClickable(false);
@@ -341,11 +336,11 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     void reset_game(){
         first = true;
         count = 0;
-        flag_count = 6;
-        flag_display = 6;
+        flag_count = no_of_mines;
+        flag_display = no_of_mines;
         mines_count.setText(flag_display+"");
-        for (int i=0; i<8; i++){
-            for (int j=0; j<8; j++){
+        for (int i=0; i<row; i++){
+            for (int j=0; j<column; j++){
                 btn[i][j].setBackgroundResource(R.drawable.buttonshape);
                 btn[i][j].setClickable(true);
                 btn[i][j].setText("");
@@ -385,5 +380,49 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         time.stop();
     }
 
+    //****Setting Flags****
+    void adding_flag(int i, int j){
+        if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.flag).getConstantState()) {
+            btn[i][j].setBackgroundResource(R.drawable.buttonshape);
+            mines_count.setText(++flag_display + "");
+            if (value[i][j] == mine) {
+                flag_count++;
+            }
+        }
+        else
+        if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState() && flag_display>0) {
+            btn[i][j].setBackgroundResource(R.drawable.flag);
+            mines_count.setText(--flag_display + "");
+            if (value[i][j] == mine) {
+                flag_count--;
+                if (flag_count == 0) {
+                    for (int a = 0; a < row; a++)
+                        for (int b = 0; b < column; b++) {
+                            btn[a][b].setClickable(false);
+                        }
+                    win_game();
+                }
+            }
+        }
+        else{
+            Toast.makeText(this, "No flags available", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    //****OnLongClick****
+    @Override
+    public boolean onLongClick(View view) {
+        if(view instanceof Button){
+            if (setting_pref.getBoolean("vibration",false))
+                vibrator.vibrate(100);
+            for (int i = 0; i < row; i++) {
+                for (int j = 0; j < column; j++) {
+                    if (view == btn[i][j]) {
+                        adding_flag(i,j);
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }

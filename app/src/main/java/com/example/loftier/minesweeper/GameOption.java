@@ -25,7 +25,7 @@ public class GameOption extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     //****Declaration****
-    Button new_game, user_score, game_settings, quit;
+    Button new_game, user_score, game_settings, logout;
     DrawerLayout drawer;
     Toolbar toolbar;
     FloatingActionButton fab;
@@ -41,7 +41,7 @@ public class GameOption extends AppCompatActivity
         new_game = findViewById(R.id.idbtnnewgame);
         user_score = findViewById(R.id.idbtnscore);
         game_settings = findViewById(R.id.idbtnsetting);
-        quit = findViewById(R.id.idbtnlogout);
+        logout = findViewById(R.id.idbtnlogout);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -62,7 +62,7 @@ public class GameOption extends AppCompatActivity
         new_game.setOnClickListener(this);
         user_score.setOnClickListener(this);
         game_settings.setOnClickListener(this);
-        quit.setOnClickListener(this);
+        logout.setOnClickListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -136,7 +136,7 @@ public class GameOption extends AppCompatActivity
             customDialogBox("Custom Dialog Box","");
         } else if (view == game_settings) {
             startActivity(new Intent(GameOption.this, Settings.class));
-        } else if (view == quit) {
+        } else if (view == logout) {
             pref = getSharedPreferences("login_values", MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean("status", false);
