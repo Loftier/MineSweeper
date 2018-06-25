@@ -68,12 +68,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/smile" />
 
-        <Switch
+        <ToggleButton
             android:id="@+id/idbtnflag"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
+            android:paddingLeft="10dp"
+            android:paddingRight="2dp"
+            android:paddingStart="10dp"
+            android:textOff="Mine"
+            android:textOn="Flag"
             android:textStyle="bold" />
 
         <Space

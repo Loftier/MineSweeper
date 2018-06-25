@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".SignUp">
 
     <TextView
@@ -13,6 +14,7 @@
         android:layout_marginBottom="4dp"
         android:layout_marginStart="16dp"
         android:text="Username *"
+        android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/idetusernamesignup"
@@ -25,6 +27,7 @@
         android:layout_marginBottom="6dp"
         android:layout_marginStart="16dp"
         android:text="EmailID *"
+        android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/idetemailsignup"
@@ -37,6 +40,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginStart="16dp"
         android:text="Password *"
+        android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/idetpasswordsignup"
@@ -47,8 +51,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="33dp"
-        android:text="Mobile No  "
+        android:layout_marginTop="20dp"
+        android:text="Mobile No   "
+        android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="94dp"
+        android:background="#ffffff"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
@@ -73,6 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
+        android:background="#ffffff"
         android:ems="10"
         android:hint="Email"
         android:inputType="textPersonName"
@@ -86,6 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
+        android:background="#ffffff"
         android:ems="10"
         android:hint="Mobile No"
         android:inputType="textPersonName"
@@ -99,6 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:layout_marginTop="18dp"
+        android:background="#ffffff"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
@@ -111,14 +120,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="36dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="56dp"
+        android:background="@drawable/purple_button"
         android:text="Sign Up"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.176"
-        app:layout_constraintStart_toStartOf="@+id/idetnumbersignup"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idetnumbersignup" />
 
     <Button
@@ -132,5 +141,18 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="136dp"
+        android:layout_marginStart="32dp"
+        android:background="@drawable/purple_button"
+        android:text="Back"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

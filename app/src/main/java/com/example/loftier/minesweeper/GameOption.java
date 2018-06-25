@@ -3,11 +3,10 @@ package com.example.loftier.minesweeper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,19 +18,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class GameOption extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     //****Declaration****
-    Button new_game, user_score, game_settings, logout;
+    Button new_game, user_score, game_settings, quit;
     DrawerLayout drawer;
     Toolbar toolbar;
-    FloatingActionButton fab;
+    FloatingActionButton about;
     NavigationView navigationView;
     SharedPreferences pref;
     ConstraintLayout layout;
+    TextView show_email;
+
+
+    DatabaseHelper databasehelper;
+    SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,20 +47,19 @@ public class GameOption extends AppCompatActivity
         new_game = findViewById(R.id.idbtnnewgame);
         user_score = findViewById(R.id.idbtnscore);
         game_settings = findViewById(R.id.idbtnsetting);
-        logout = findViewById(R.id.idbtnlogout);
+        quit = findViewById(R.id.idbtnquit);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         layout = findViewById(R.id.idconslayoutgameoptn);
         setSupportActionBar(toolbar);
+        show_email = findViewById(R.id.idtvemailgameoptionheader);
 
-
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        about = (FloatingActionButton) findViewById(R.id.idfababout);
+        about.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                customDialogBox("","");
             }
         });
 
@@ -62,12 +67,14 @@ public class GameOption extends AppCompatActivity
         new_game.setOnClickListener(this);
         user_score.setOnClickListener(this);
         game_settings.setOnClickListener(this);
-        logout.setOnClickListener(this);
+        quit.setOnClickListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+
 
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -109,14 +116,17 @@ public class GameOption extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.idchangeimage) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.idupdate) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.idlogout) {
+            pref = getSharedPreferences("login_values", MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putBoolean("status", false);
+            editor.apply();
+            startActivity(new Intent(GameOption.this, LoginActivity.class));
+            finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -132,17 +142,27 @@ public class GameOption extends AppCompatActivity
         if (view == new_game) {
             startActivity(new Intent(GameOption.this, Game.class));
         } else if (view == user_score) {
-            //startActivity(new Intent(GameOption.this, GameOption.class));
-            customDialogBox("Custom Dialog Box","");
+            startActivity(new Intent(GameOption.this, Scores.class));
         } else if (view == game_settings) {
             startActivity(new Intent(GameOption.this, Settings.class));
-        } else if (view == logout) {
-            pref = getSharedPreferences("login_values", MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putBoolean("status", false);
-            editor.apply();
-            startActivity(new Intent(GameOption.this, LoginActivity.class));
-            finish();
+        } else if (view == quit) {
+            final AlertDialog.Builder builder=new AlertDialog.Builder(this);
+            builder.setTitle("EXIT");
+            builder.setMessage("Are you sure, you want to quit?");
+            builder.setIcon(R.drawable.mine_icon);
+            builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    System.exit(0);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+            builder.setCancelable(false);
+            builder.show();
         }
     }
 
@@ -155,7 +175,7 @@ public class GameOption extends AppCompatActivity
         AlertDialog dialog=builder.create();
         dialog.setCancelable(true);
         dialog.show();
-        Button btn=view.findViewById(R.id.idbtnokcustom);
+        Button btn=view.findViewById(R.id.idbtncloseabout);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

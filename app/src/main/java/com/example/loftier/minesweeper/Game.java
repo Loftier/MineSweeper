@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.Random;
 
@@ -38,10 +39,10 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     Button[][] btn;
     ImageButton smiley, settings_menu;
     GridLayout layout;
-    Switch flag;
+    ToggleButton flag;
     MediaPlayer winning_sound, bomb_sound;
-    int row = 12, column = 7, no_of_mines = 10;     //  12*7(84)10,    18*11(196)25,     24*15(360)50,     30*19(570)80
-    float width_size = 8f, height_size = 15f;       //  8*15,          12*22,            16*29,            20*36
+    int row = 15, column = 9, no_of_mines = 25;         //  10*6(60)10,    15*9(135)25,     20*12(240)50,     25*15(375)95
+    float width_size = 9.7f, height_size = 18.5f;       //  6.5*12,          9.7*18.5,            13*24.5,      16*30
 
     int [][] value = new int[row][column];
     boolean[][] access = new boolean[row][column];
@@ -99,7 +100,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                 int height = getWindowManager().getDefaultDisplay().getHeight();
                 //btn[i][j].setGravity(Gravity.CENTER);
                 btn[i][j].setBackgroundResource(R.drawable.buttonshape);
-                btn[i][j].setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                btn[i][j].setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                 btn[i][j].setTypeface(Typeface.SERIF);
                 btn[i][j].setTypeface(btn[i][j].getTypeface(), Typeface.BOLD);
                 //btn[i][j].setGravity(Gravity.LEFT);
@@ -224,9 +225,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         for (int i=0; i<row; i++){
             for (int j=0; j<column; j++){
                 if(value[i][j]!=mine){
-                    btn[i][j].setText(value[i][j]+"");
                     coloringTheNumbers(i,j);
-                    btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
+                    //btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
                 }
                 else if(i!=m || j!=n){
                     btn[i][j].setBackgroundResource(R.drawable.mine);
@@ -247,33 +247,34 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         }
         else
         {
-            btn[i][j].setText(value[i][j]+"");
             coloringTheNumbers(i,j);
             btn[i][j].setClickable(false);
-            btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
+            //btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
         }
     }
 
     //****Giving colors to the different numbers****
-    void coloringTheNumbers(int i, int j){
-        if(value[i][j]==0)
+    void coloringTheNumbers(int i, int j) {
+        if (value[i][j] == 0){
             btn[i][j].setTextColor(Color.parseColor("#00000000"));
+            btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
+        }
         else if(value[i][j]==1)
-            btn[i][j].setTextColor(Color.parseColor("#ffff0000"));
+            btn[i][j].setBackgroundResource(R.drawable.one);
         else if(value[i][j]==2)
-            btn[i][j].setTextColor(Color.parseColor("#ff44bb00"));
+            btn[i][j].setBackgroundResource(R.drawable.two);
         else if(value[i][j]==3)
-            btn[i][j].setTextColor(Color.parseColor("#ff0000ff"));
+            btn[i][j].setBackgroundResource(R.drawable.three);
         else if(value[i][j]==4)
-            btn[i][j].setTextColor(Color.parseColor("#ffaaaa00"));
+            btn[i][j].setBackgroundResource(R.drawable.four);
         else if(value[i][j]==5)
-            btn[i][j].setTextColor(Color.parseColor("#ff44aaaa"));
+            btn[i][j].setBackgroundResource(R.drawable.five);
         else if(value[i][j]==6)
-            btn[i][j].setTextColor(Color.parseColor("#ffcc00fa"));
+            btn[i][j].setBackgroundResource(R.drawable.six);
         else if(value[i][j]==7)
-            btn[i][j].setTextColor(Color.parseColor("#ff4fff00"));
+            btn[i][j].setBackgroundResource(R.drawable.seven);
         else
-            btn[i][j].setTextColor(Color.parseColor("#ff000000"));
+            btn[i][j].setBackgroundResource(R.drawable.eight);
     }
 
     //****When zero is Pressed****
@@ -288,10 +289,9 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                         continue;
                     access[m][n]=false;
                     showNeighboringPositions(m, n);
-                    btn[m][n].setText(value[m][n] + "");
                     coloringTheNumbers(m, n);
                     btn[m][n].setClickable(false);
-                    btn[m][n].setBackgroundResource(R.drawable.buttonshapeonclicked);
+                    //btn[m][n].setBackgroundResource(R.drawable.buttonshapeonclicked);
                 }
             }
         }
@@ -316,6 +316,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     void win_game(){
         winning_sound.start();
         pauseTimer();
+        smiley.setImageResource(R.drawable.glassessmiley);
         if(setting_pref.getBoolean("vibration",false))
             vibrator.vibrate(100);
         double t = (double)-ctime/1000.0;
