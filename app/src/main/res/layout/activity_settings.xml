@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".Settings">
+    tools:context=".Settings"
+    tools:layout_editor_absoluteY="25dp">
 
     <TextView
         android:id="@+id/textView"
@@ -54,46 +55,43 @@
         android:id="@+id/idbtnoksettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="39dp"
-        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="75dp"
+        android:layout_marginEnd="57dp"
         android:background="@drawable/purple_button"
         android:text="OK"
         android:textColor="@android:color/white"
-        android:textSize="30sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <SeekBar
-        android:id="@+id/idseeksound"
-        android:layout_width="180dp"
+    <Switch
+        android:id="@+id/idswitchsound"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="101dp"
-        app:layout_constraintBottom_toTopOf="@+id/idswitchvibrate"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/idswitchvibrate"
+        app:layout_constraintStart_toStartOf="@+id/idswitchvibrate"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Switch
         android:id="@+id/idswitchvibrate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="64dp"
-        android:textColorLink="#fff"
+        android:layout_marginEnd="57dp"
+        android:layout_marginTop="55dp"
+        android:textColorLink="#e1d43f"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idseeksound" />
+        app:layout_constraintTop_toBottomOf="@+id/idswitchsound" />
 
     <Spinner
-        android:id="@+id/idspinner"
+        android:id="@+id/idspinnerlevels"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginEnd="57dp"
+        android:layout_marginTop="59dp"
         android:background="@android:color/white"
         android:entries="@array/list"
-        android:gravity="right|center"
-        android:minWidth="150dp"
+        android:gravity="center"
         android:popupBackground="@android:color/background_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idswitchvibrate" />

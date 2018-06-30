@@ -49,7 +49,7 @@
         android:background="@drawable/purple_button"
         android:text="Start"
         android:textColor="@android:color/white"
-        android:textSize="30sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"

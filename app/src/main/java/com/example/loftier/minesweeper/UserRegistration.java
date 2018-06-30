@@ -19,6 +19,10 @@ public class UserRegistration extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(),GameOption.class));
             finish();
         }
+        else if (pref.getBoolean("guest_status",false)){
+            startActivity(new Intent(getApplicationContext(),GameOption.class));
+            finish();
+        }
 
         setContentView(R.layout.activity_user_registration);
         Button login = findViewById(R.id.idbtnlogin);

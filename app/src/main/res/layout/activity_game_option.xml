@@ -18,11 +18,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#c36be0"
+        android:background="@drawable/dialogs_background"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_game_option"
         app:itemBackground="@drawable/purple_button"
-        app:itemTextAppearance="@style/TextAppearance.AppCompat.Large"
         app:menu="@menu/activity_game_option_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

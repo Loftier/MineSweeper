@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
@@ -20,6 +21,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.GridLayout;
@@ -40,23 +42,26 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     ImageButton smiley, settings_menu;
     GridLayout layout;
     ToggleButton flag;
+    CheckBox cb;
     MediaPlayer winning_sound, bomb_sound;
-    int row = 15, column = 9, no_of_mines = 25;         //  10*6(60)10,    15*9(135)25,     20*12(240)50,     25*15(375)95
-    float width_size = 9.7f, height_size = 18.5f;       //  6.5*12,          9.7*18.5,            13*24.5,      16*30
+    int row, column, no_of_mines;         //  10*6(60)10,    15*9(135)25,     20*12(240)50,     25*15(375)95
+    float width_size, height_size;       //  6.5*12,          9.7*18.5,            13*24.5,      16*30
 
-    int [][] value = new int[row][column];
-    boolean[][] access = new boolean[row][column];
+    int [][] value;
+    boolean[][] access;
     Random random;
-    private int mine=9, count = 0, flag_count = no_of_mines, flag_display = no_of_mines;
+    private int mine=9, count = 0, flag_count, flag_display;
     boolean first=true, flag_on_off=false;
     private long ctime;
     Vibrator vibrator;
     SharedPreferences setting_pref;
+    SharedPreferences.Editor editor;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_game);
 
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //View decorView = getWindow().getDecorView();
@@ -65,13 +70,16 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         //ActionBar actionBar = getActionBar();
         //actionBar.hide();
 
-        setContentView(R.layout.activity_game);
 
         vibrator=(Vibrator) getSystemService(VIBRATOR_SERVICE);
         setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
+        //****Setting The Board Layout****
+        setting_level();
 
         //****Initializing Widgets****
         btn = new Button[row][column];
+        value = new int[row][column];
+        access = new boolean[row][column];
         smiley = findViewById(R.id.idbtnsmiley);
         settings_menu = findViewById(R.id.idibtnsettings);
         flag = findViewById(R.id.idbtnflag);
@@ -82,6 +90,9 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         mines_count = findViewById(R.id.idtvminescount);
         winning_sound = MediaPlayer.create(this,R.raw.gameover);
         bomb_sound = MediaPlayer.create(this, R.raw.bomb);
+        editor=setting_pref.edit();
+        editor.putBoolean("show",false);
+        editor.apply();
 
         //****Adding Properties****
         mines_count.setText(flag_display + "");
@@ -98,12 +109,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                 btn[i][j].setOnLongClickListener(this);
                 int width = getWindowManager().getDefaultDisplay().getWidth();
                 int height = getWindowManager().getDefaultDisplay().getHeight();
-                //btn[i][j].setGravity(Gravity.CENTER);
                 btn[i][j].setBackgroundResource(R.drawable.buttonshape);
-                btn[i][j].setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                btn[i][j].setTypeface(Typeface.SERIF);
-                btn[i][j].setTypeface(btn[i][j].getTypeface(), Typeface.BOLD);
-                //btn[i][j].setGravity(Gravity.LEFT);
 
                 layout.addView(btn[i][j], (int) (width/width_size), (int) (height/height_size));
                 access[i][j] = true;
@@ -119,6 +125,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                 btn[i][j].setOnClickListener(this);
             }
         }
+
     }
 
     //****OnClick Method****
@@ -146,7 +153,9 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                                     pauseTimer();
                                     smiley.setImageResource(R.drawable.sad);
                                     bomb_sound.start();
-                                    //showMessage("\t\t\t\t\t\t Game Over", "Click Smiley to Start a New Game");
+                                    if(!setting_pref.getBoolean("show",false)) {
+                                        losing_dialog_box();
+                                    }
                                 }
                                 else {
                                     display_position(i, j);
@@ -160,6 +169,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         }
         else
         if(view == smiley){                                         //****Operations on Smiley****
+            if (setting_pref.getBoolean("vibration",false))
+                vibrator.vibrate(100);
             smiley.setImageResource(R.drawable.smile);
             reset_game();
             resetTimer();
@@ -179,6 +190,12 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             }
             else
                 flag_on_off = false;
+        }
+        else if (compoundButton == cb){
+            if(b){
+                editor.putBoolean("show",true);
+                editor.apply();
+            }
         }
     }
     //****Adding values to buttons****
@@ -257,7 +274,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     void coloringTheNumbers(int i, int j) {
         if (value[i][j] == 0){
             btn[i][j].setTextColor(Color.parseColor("#00000000"));
-            btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
+            btn[i][j].setBackgroundColor(Color.parseColor("#ffbbbbbb"));
         }
         else if(value[i][j]==1)
             btn[i][j].setBackgroundResource(R.drawable.one);
@@ -366,6 +383,61 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     }
 */
 
+    //****Losing Dialog Box****
+    void losing_dialog_box(){
+        View v = getLayoutInflater().inflate(R.layout.losing_dialog_box,null);
+        cb = v.findViewById(R.id.checkBox);
+        cb.setOnCheckedChangeListener(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(v);
+        AlertDialog dialog=builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+    }
+
+    //****Setting Level****
+    void setting_level(){
+        int level = setting_pref.getInt("level",0);
+        switch (level){
+            case 0: {
+                row = 10;
+                column = 6;
+                no_of_mines = 10;
+                width_size = 6.5f;
+                height_size = 12f;
+                break;
+            }
+            case 1: {
+                row = 15;
+                column = 9;
+                no_of_mines = 25;
+                width_size = 9.7f;
+                height_size = 18.5f;
+                break;
+            }
+            case 2: {
+                row = 20;
+                column = 12;
+                no_of_mines = 50;
+                width_size = 13f;
+                height_size = 24.5f;
+                break;
+            }
+            case 3: {
+                row = 25;
+                column = 15;
+                no_of_mines = 95;
+                width_size = 16f;
+                height_size = 30f;
+                break;
+            }
+            default:{
+            }
+        }
+        flag_count = no_of_mines;
+        flag_display = no_of_mines;
+    }
     //****Timer****
     public void startTimer(){
         time.setBase(SystemClock.elapsedRealtime()+ctime);
@@ -405,7 +477,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                 }
             }
         }
-        else{
+        else
+        if (flag_display <= 0)   {
             Toast.makeText(this, "No flags available", Toast.LENGTH_SHORT).show();
         }
     }

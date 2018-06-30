@@ -7,6 +7,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -14,11 +15,11 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-public class Settings extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, SeekBar.OnSeekBarChangeListener {
+public class Settings extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 
     //****Declaration****
     Switch vibrate;
-    SeekBar sound;
+    Switch sound;
     Button ok;
     BackgroundAudioService music;
     Spinner difficulty_level;
@@ -26,14 +27,14 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
     SharedPreferences setting_pref;
     Vibrator vibrator;
     SharedPreferences.Editor editor;
-    int vol = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-        //Preference
+        //****Preference****
         setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
         editor=setting_pref.edit();
 
@@ -41,16 +42,18 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
 
         //****Initialization****
         vibrate = findViewById(R.id.idswitchvibrate);
-        sound = findViewById(R.id.idseeksound);
+        sound = findViewById(R.id.idswitchsound);
         ok = findViewById(R.id.idbtnoksettings);
-        difficulty_level = findViewById(R.id.idspinner);
-
-        //OnClick Listener
-        vibrate.setOnCheckedChangeListener(this);
-        sound.setOnSeekBarChangeListener(this);
-        ok.setOnClickListener(this);
-
+        difficulty_level = findViewById(R.id.idspinnerlevels);
         vibrate.setChecked(setting_pref.getBoolean("vibration",false));
+        sound.setChecked(setting_pref.getBoolean("volume",false));
+        difficulty_level.setSelection(setting_pref.getInt("level",0));
+
+        //****OnClick Listener****
+        vibrate.setOnCheckedChangeListener(this);
+        sound.setOnCheckedChangeListener(this);
+        ok.setOnClickListener(this);
+        difficulty_level.setOnItemSelectedListener(this);
 
     }
 
@@ -77,27 +80,27 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
                 editor.putBoolean("vibration",false);
                 editor.apply();
             }
+        } else if (compoundButton == sound){
+            Intent i = new Intent(getApplicationContext(),BackgroundAudioService.class);
+            if(b){
+                startService(i);
+                editor.putBoolean("volume",true);
+                editor.apply();
+            }
+            else{
+                stopService(i);
+                editor.putBoolean("volume",false);
+                editor.apply();
+            }
         }
     }
-
     @Override
-    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        if(i>0)
-            editor.putBoolean("volume",true);
-        else
-            editor.putBoolean("volume",false);
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        editor.putInt("level",i);
         editor.apply();
-        vol = i;
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        music.music_player.setVolume(vol,vol);
-        Toast.makeText(this, seekBar.getProgress()+"%", Toast.LENGTH_SHORT).show();
-
+    public void onNothingSelected(AdapterView<?> adapterView) {
     }
 }

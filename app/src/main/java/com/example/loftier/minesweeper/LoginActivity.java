@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editor.apply();
                     Intent i = new Intent(LoginActivity.this, GameOption.class);
                     startActivity(i);
+                    finish();
                 }
                 else {
                     Toast.makeText(this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();

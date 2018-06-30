@@ -96,7 +96,7 @@
         android:background="#ffffff"
         android:ems="10"
         android:hint="Mobile No"
-        android:inputType="textPersonName"
+        android:inputType="number"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/idtvmobileno"
         app:layout_constraintStart_toEndOf="@+id/idtvmobileno" />
@@ -125,34 +125,9 @@
         android:background="@drawable/purple_button"
         android:text="Sign Up"
         android:textColor="@android:color/white"
-        android:textSize="30sp"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idetnumbersignup" />
-
-    <Button
-        android:id="@+id/idbtnview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="148dp"
-        android:text="View"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="136dp"
-        android:layout_marginStart="32dp"
-        android:background="@drawable/purple_button"
-        android:text="Back"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

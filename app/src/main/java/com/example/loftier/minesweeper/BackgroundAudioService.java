@@ -28,8 +28,7 @@ public class BackgroundAudioService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(setting_pref.getBoolean("volume",false))
-            music_player.start();
+        music_player.start();
         return super.onStartCommand(intent, flags, startId);
     }
 
