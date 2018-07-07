@@ -1,4 +1,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.loftier.minesweeper.HelpMenu"></menu>
+    tools:context="com.example.loftier.minesweeper.HelpMenu">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/idchangeimage"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Change Image" />
+        <item
+            android:id="@+id/idupdate"
+            android:icon="@drawable/setting"
+            android:title="Update Account" />
+        <item
+            android:id="@+id/idlogout"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Log Out" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>

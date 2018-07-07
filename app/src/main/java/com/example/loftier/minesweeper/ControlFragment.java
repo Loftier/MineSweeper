@@ -18,8 +18,6 @@ public class ControlFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View controleView= inflater.inflate(R.layout.fragment_control, container, false);
-        // Inflate the layout for this fragment
-       // TextView tv=controleView.findViewById();
         return controleView;
     }
 

@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -26,27 +27,28 @@ import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 public class Game extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnLongClickListener {
 
     //****Declaration****
-    TextView mines_count;
+    TextView mines_count, text;
     Chronometer time;
+    Button cancel_reset, ok_reset;
     Button[][] btn;
     ImageButton smiley, settings_menu;
     GridLayout layout;
     ToggleButton flag;
     CheckBox cb;
     MediaPlayer winning_sound, bomb_sound;
-    int row, column, no_of_mines;         //  10*6(60)10,    15*9(135)25,     20*12(240)50,     25*15(375)95
-    float width_size, height_size;       //  6.5*12,          9.7*18.5,            13*24.5,      16*30
-
+    int row, column, no_of_mines;
+    float width_size, height_size;
     int [][] value;
     boolean[][] access;
     Random random;
@@ -54,8 +56,24 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     boolean first=true, flag_on_off=false;
     private long ctime;
     Vibrator vibrator;
-    SharedPreferences setting_pref;
+    SharedPreferences setting_pref, pref;
     SharedPreferences.Editor editor;
+    DatabaseHelper databaseHelper;
+    SQLiteDatabase db;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(setting_pref.getBoolean("volume",false)){
+            startService(new Intent(getApplicationContext(),BackgroundAudioService.class));
+        }
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        stopService(new Intent(getApplicationContext(),BackgroundAudioService.class));
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -63,16 +81,13 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //View decorView = getWindow().getDecorView();
-        //int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        //decorView.setSystemUiVisibility(uiOptions);
-        //ActionBar actionBar = getActionBar();
-        //actionBar.hide();
+        databaseHelper = new DatabaseHelper(this);
+        db = databaseHelper.getWritableDatabase();
 
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        setting_pref = getSharedPreferences("setting_keys",MODE_PRIVATE);
+        pref = getSharedPreferences("login_values",MODE_PRIVATE);
 
-        vibrator=(Vibrator) getSystemService(VIBRATOR_SERVICE);
-        setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
         //****Setting The Board Layout****
         setting_level();
 
@@ -99,11 +114,6 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-    /*
-                String str = "idbtn"+(i+1);
-                int id = getResources().getIdentifier(str,"id",getPackageName());
-                btn[i] = findViewById(id);
-    */
                 btn[i][j] = new Button(this);
                 btn[i][j].setOnClickListener(this);
                 btn[i][j].setOnLongClickListener(this);
@@ -131,53 +141,55 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
     //****OnClick Method****
     @Override
     public void onClick(View view) {
-        if(view instanceof Button) {                                //****Operations on Buttons
-            if (setting_pref.getBoolean("vibration",false))
-                vibrator.vibrate(30);
-            for (int i = 0; i < row; i++) {
-                for (int j = 0; j < column; j++) {
-                    if (view == btn[i][j]) {
-                        if (flag_on_off){
-                            adding_flag(i,j);
-                        }
-                        else if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState()){
-                            if (first) {
-                                minesPosition(i, j);
-                                first = false;
-                                display_position(i, j);
-                                startTimer();
-                            }
-                            else {
-                                if (value[i][j] == mine) {
-                                    display_all(i,j);
-                                    pauseTimer();
-                                    smiley.setImageResource(R.drawable.sad);
-                                    bomb_sound.start();
-                                    if(!setting_pref.getBoolean("show",false)) {
-                                        losing_dialog_box();
+        if(view instanceof Button) {                               //****Operations on Buttons****
+            if (view == ok_reset){
+                startActivity(new Intent(Game.this,Settings.class));
+                finish();
+            }
+            else
+            if (view == cancel_reset){
+                dialog.dismiss();
+            }
+            else {
+                if (setting_pref.getBoolean("vibration", false))
+                    vibrator.vibrate(30);
+                for (int i = 0; i < row; i++) {
+                    for (int j = 0; j < column; j++) {
+                        if (view == btn[i][j]) {
+                            if (flag_on_off) {
+                                adding_flag(i, j);
+                            } else if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState()) {
+                                if (first) {
+                                    minesPosition(i, j);
+                                    first = false;
+                                    display_position(i, j);
+                                    startTimer();
+                                } else {
+                                    if (value[i][j] == mine) {
+                                        display_all(i, j);
+                                        pauseTimer();
+                                        smiley.setImageResource(R.drawable.sad);
+                                        bomb_sound.start();
+                                        if (!setting_pref.getBoolean("show", false)) {
+                                            losing_dialog_box();
+                                        }
+                                    } else {
+                                        display_position(i, j);
                                     }
                                 }
-                                else {
-                                    display_position(i, j);
-                                }
                             }
                         }
-
                     }
                 }
             }
         }
         else
-        if(view == smiley){                                         //****Operations on Smiley****
-            if (setting_pref.getBoolean("vibration",false))
+        if(view == smiley) {                                         //****Operations on Smiley****
+            if (setting_pref.getBoolean("vibration", false))
                 vibrator.vibrate(100);
             smiley.setImageResource(R.drawable.smile);
             reset_game();
             resetTimer();
-        }
-        else
-        if(view == settings_menu){
-            startActivity(new Intent(Game.this,Settings.class));
         }
     }
 
@@ -198,6 +210,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             }
         }
     }
+    
     //****Adding values to buttons****
     void minesPosition(int a, int b) {
         //****Setting Mines****
@@ -243,7 +256,6 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             for (int j=0; j<column; j++){
                 if(value[i][j]!=mine){
                     coloringTheNumbers(i,j);
-                    //btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
                 }
                 else if(i!=m || j!=n){
                     btn[i][j].setBackgroundResource(R.drawable.mine);
@@ -253,6 +265,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
 
                 }
                 btn[i][j].setClickable(false);
+                btn[i][j].setEnabled(false);
             }
         }
     }
@@ -265,9 +278,8 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         else
         {
             coloringTheNumbers(i,j);
-            btn[i][j].setClickable(false);
-            //btn[i][j].setBackgroundResource(R.drawable.buttonshapeonclicked);
         }
+        smiley.setImageResource(R.drawable.smile);
     }
 
     //****Giving colors to the different numbers****
@@ -292,6 +304,9 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             btn[i][j].setBackgroundResource(R.drawable.seven);
         else
             btn[i][j].setBackgroundResource(R.drawable.eight);
+        btn[i][j].setClickable(false);
+        btn[i][j].setEnabled(false);
+
     }
 
     //****When zero is Pressed****
@@ -307,26 +322,9 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
                     access[m][n]=false;
                     showNeighboringPositions(m, n);
                     coloringTheNumbers(m, n);
-                    btn[m][n].setClickable(false);
-                    //btn[m][n].setBackgroundResource(R.drawable.buttonshapeonclicked);
                 }
             }
         }
-    }
-
-    //****Alert Box when Game is over****
-    void showMessage(String title,String message){
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setIcon(R.drawable.mine_icon);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
-        builder.setCancelable(false);
-        builder.show();
     }
 
     //****On Winning the Game****
@@ -337,7 +335,10 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         if(setting_pref.getBoolean("vibration",false))
             vibrator.vibrate(100);
         double t = (double)-ctime/1000.0;
-        showMessage("\t\t Congratulations!!!", "You Won. \n" + "Time: " + t + "secs");
+
+        storing_time(t);
+
+        winning_dialog_box(t);
         for (int i=0; i<row; i++){
             for (int j=0; j<column; j++){
                 if(value[i][j] == mine){
@@ -361,6 +362,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             for (int j=0; j<column; j++){
                 btn[i][j].setBackgroundResource(R.drawable.buttonshape);
                 btn[i][j].setClickable(true);
+                btn[i][j].setEnabled(true);
                 btn[i][j].setText("");
                 btn[i][j].setTextColor(Color.parseColor("#ff000000"));
                 value[i][j] = 0;
@@ -369,19 +371,6 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             }
         }
     }
-
-/*
-    void customDialogBox (String title, String message){
-        View view = getLayoutInflater().inflate(R.layout.custom_layout,null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setView(view);
-        AlertDialog dialog=builder.create();
-        dialog.setCancelable(true);
-        dialog.show();
-    }
-*/
 
     //****Losing Dialog Box****
     void losing_dialog_box(){
@@ -393,7 +382,33 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
         AlertDialog dialog=builder.create();
         dialog.setCancelable(true);
         dialog.show();
+    }
 
+    //****Winning Dialog Box****
+    void winning_dialog_box(double time_show){
+        View v = getLayoutInflater().inflate(R.layout.winning_dialog_box,null);
+        text = v.findViewById(R.id.idtvtime);
+        text.setText("Time: "+time_show+"");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(v);
+        AlertDialog dialog=builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
+    //****Reset Dialog Box****
+    AlertDialog dialog;
+    void reset_dialog_box() {
+        View v = getLayoutInflater().inflate(R.layout.reset_game, null);
+        cancel_reset = v.findViewById(R.id.idbtncancelreset);
+        ok_reset = v.findViewById(R.id.idbtnokreset);
+        cancel_reset.setOnClickListener(this);
+        ok_reset.setOnClickListener(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(v);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     //****Setting Level****
@@ -403,7 +418,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             case 0: {
                 row = 10;
                 column = 6;
-                no_of_mines = 10;
+                no_of_mines =10;    //10
                 width_size = 6.5f;
                 height_size = 12f;
                 break;
@@ -411,7 +426,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             case 1: {
                 row = 15;
                 column = 9;
-                no_of_mines = 25;
+                no_of_mines = 25;   //25
                 width_size = 9.7f;
                 height_size = 18.5f;
                 break;
@@ -419,7 +434,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             case 2: {
                 row = 20;
                 column = 12;
-                no_of_mines = 50;
+                no_of_mines = 50;   //50
                 width_size = 13f;
                 height_size = 24.5f;
                 break;
@@ -427,7 +442,7 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             case 3: {
                 row = 25;
                 column = 15;
-                no_of_mines = 95;
+                no_of_mines = 95;   //95
                 width_size = 16f;
                 height_size = 30f;
                 break;
@@ -455,31 +470,32 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
 
     //****Setting Flags****
     void adding_flag(int i, int j){
-        if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.flag).getConstantState()) {
-            btn[i][j].setBackgroundResource(R.drawable.buttonshape);
-            mines_count.setText(++flag_display + "");
-            if (value[i][j] == mine) {
-                flag_count++;
-            }
+        if(first){
+            Toast.makeText(this, "Flags not allowed in the start", Toast.LENGTH_SHORT).show();
         }
-        else
-        if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState() && flag_display>0) {
-            btn[i][j].setBackgroundResource(R.drawable.flag);
-            mines_count.setText(--flag_display + "");
-            if (value[i][j] == mine) {
-                flag_count--;
-                if (flag_count == 0) {
-                    for (int a = 0; a < row; a++)
-                        for (int b = 0; b < column; b++) {
-                            btn[a][b].setClickable(false);
-                        }
-                    win_game();
+        else {
+            if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.flag).getConstantState()) {
+                btn[i][j].setBackgroundResource(R.drawable.buttonshape);
+                mines_count.setText(++flag_display + "");
+                if (value[i][j] == mine) {
+                    flag_count++;
                 }
+            } else if (btn[i][j].getBackground().getConstantState() == getResources().getDrawable(R.drawable.buttonshape).getConstantState() && flag_display > 0) {
+                btn[i][j].setBackgroundResource(R.drawable.flag);
+                mines_count.setText(--flag_display + "");
+                if (value[i][j] == mine) {
+                    flag_count--;
+                    if (flag_count == 0) {
+                        for (int a = 0; a < row; a++)
+                            for (int b = 0; b < column; b++) {
+                                btn[a][b].setClickable(false);
+                            }
+                        win_game();
+                    }
+                }
+            } else if (flag_display <= 0) {
+                Toast.makeText(this, "No flags available", Toast.LENGTH_SHORT).show();
             }
-        }
-        else
-        if (flag_display <= 0)   {
-            Toast.makeText(this, "No flags available", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -498,5 +514,43 @@ public class Game extends AppCompatActivity implements View.OnClickListener, Com
             }
         }
         return true;
+    }
+
+    //****Adding time to DataBase****
+    void storing_time(double time){
+        if (pref.getBoolean("guest_status",false)){
+        }
+        else {
+            int level = setting_pref.getInt("level", 0);
+            String level_name = "beginner";
+            switch (level) {
+                case 0: {
+                    level_name = "beginner";
+                    break;
+                }
+                case 1: {
+                    level_name = "specialist";
+                    break;
+                }
+                case 2: {
+                    level_name = "expert";
+                    break;
+                }
+                case 3: {
+                    level_name = "grandmaster";
+                    break;
+                }
+                default: {
+                }
+            }
+            String emailid = pref.getString("email", "");
+            String gettingname = "SELECT * FROM Data WHERE EMail = '" + emailid + "'";
+            Cursor cs = db.rawQuery(gettingname, null);
+            cs.moveToFirst();
+            String name = cs.getString(1);
+
+            String query = "INSERT into Time (username, '"+level_name+"') VALUES ('" + name + "', '" + time + "')";
+            db.execSQL(query);
+        }
     }
 }

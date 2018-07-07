@@ -9,16 +9,20 @@
     android:padding="10dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_vertical|center"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView5"
-            android:layout_width="match_parent"
+            android:id="@+id/congratulations"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="Game Over"
+            android:gravity="center"
+            android:text="Congratulations"
             android:textAlignment="center"
             android:textColor="#f8db06"
             android:textSize="18sp"
@@ -26,28 +30,19 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/idtvwon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="You Lose!"
-        android:textColor="#fff" />
+        android:gravity="center"
+        android:text="You Won!"
+        android:textColor="#fff"
+        android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/idtvtime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Click the Smiley to play again."
-        android:textColor="#fff" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="10dp" />
-
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Don't show again!"
-        android:textAlignment="viewStart"
-        android:textColor="#f8db06" />
+        android:gravity="center"
+        android:textColor="#fff"
+        android:textSize="14sp" />
 </LinearLayout>

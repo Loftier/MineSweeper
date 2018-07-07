@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="2dp"
+    android:background="#f8db06"
     android:orientation="vertical"
     android:paddingBottom="10dp"
     android:paddingLeft="10dp"
@@ -109,9 +109,10 @@
 
         <Button
             android:id="@+id/idbtnmailabout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
             android:layout_weight="1"
+            android:background="@android:color/holo_orange_dark"
             android:text="Send EMail" />
 
         <Space
@@ -121,9 +122,10 @@
 
         <Button
             android:id="@+id/idbtncloseabout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
             android:layout_weight="1"
+            android:background="@android:color/holo_orange_dark"
             android:text="Close" />
 
         <Space

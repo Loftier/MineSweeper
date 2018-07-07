@@ -22,10 +22,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class HelpMenu extends AppCompatActivity {
+public class Scores extends AppCompatActivity {
 
     SharedPreferences setting_pref;
-
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
@@ -50,21 +57,44 @@ public class HelpMenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_help_menu);
+        setContentView(R.layout.activity_scores);
 
-        setting_pref = getSharedPreferences("setting_keys",MODE_PRIVATE);
+        setting_pref = getSharedPreferences("setting_keys", MODE_PRIVATE);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container_menu);
+        mViewPager = (ViewPager) findViewById(R.id.container1);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs_menu);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs1);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_scores, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -95,7 +125,7 @@ public class HelpMenu extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_help_menu, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_scores, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
@@ -114,17 +144,12 @@ public class HelpMenu extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            if (position==0){
-                return new BlankFragment();
+            switch (position){
+                case 0: return new Beginner();
+                case 1: return new Specialist();
+                default:return null;
             }
-            else if (position == 1) {
-                return new ControlFragment();
-            }
-            else
-                return PlaceholderFragment.newInstance(position + 1);
-            }
+        }
 
         @Override
         public int getCount() {

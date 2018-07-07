@@ -9,12 +9,13 @@ import android.widget.Button;
 
 public class UserRegistration extends AppCompatActivity {
 
-    SharedPreferences pref;
+    SharedPreferences pref, setting_pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref=getSharedPreferences("login_values",MODE_PRIVATE);
+        setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
         if (pref.getBoolean("status",false)){
             startActivity(new Intent(getApplicationContext(),GameOption.class));
             finish();

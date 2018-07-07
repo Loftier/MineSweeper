@@ -22,6 +22,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_game_option"
         app:itemBackground="@drawable/purple_button"
-        app:menu="@menu/activity_game_option_drawer" />
+        app:menu="@menu/menu_help_menu" />
 
 </android.support.v4.widget.DrawerLayout>

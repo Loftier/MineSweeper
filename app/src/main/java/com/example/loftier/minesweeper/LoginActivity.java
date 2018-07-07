@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    SharedPreferences pref;
+    SharedPreferences pref,setting_pref;
     Button signin, createnewaccount;
     EditText mail, paswrd;
 
@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         db = databasehelper.getWritableDatabase();
 
         pref=getSharedPreferences("login_values",MODE_PRIVATE);
+        setting_pref = getSharedPreferences("setting_keys",MODE_PRIVATE);
 
         signin = findViewById(R.id.idbtnsignin);
         signin.setOnClickListener(this);

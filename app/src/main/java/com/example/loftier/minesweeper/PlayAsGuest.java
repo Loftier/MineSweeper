@@ -15,7 +15,7 @@ public class PlayAsGuest extends AppCompatActivity implements View.OnClickListen
     EditText guest_name;
     Button start_game;
     String name;
-    SharedPreferences pref;
+    SharedPreferences pref,setting_pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +25,7 @@ public class PlayAsGuest extends AppCompatActivity implements View.OnClickListen
         guest_name = findViewById(R.id.idetguestname);
         start_game.setOnClickListener(this);
         pref=getSharedPreferences("login_values",MODE_PRIVATE);
-
+        setting_pref=getSharedPreferences("setting_keys",MODE_PRIVATE);
 
     }
 
@@ -34,7 +34,7 @@ public class PlayAsGuest extends AppCompatActivity implements View.OnClickListen
         if(view == start_game){
             name = guest_name.getText().toString();
             if(name.length()<4){
-                Snackbar.make(view,"Min 5 characters", Snackbar.LENGTH_SHORT).setAction("action",null).show();
+                Snackbar.make(view,"Min 4 characters", Snackbar.LENGTH_SHORT).setAction("action",null).show();
             }
             else{
                 SharedPreferences.Editor editor=pref.edit();

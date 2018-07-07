@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".UserRegistration"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".PlayAsGuest" />
         <activity android:name=".SignUp" />
@@ -40,6 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Scores"
+            android:label="@string/title_activity_scores"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

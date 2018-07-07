@@ -14,13 +14,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.nio.Buffer;
+
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
     Button signup;
     EditText name,email,passwrd,mobile;
-
+    String username, emailid, password, contact;
     DatabaseHelper databasehelper;
     SQLiteDatabase db;
-    SharedPreferences pref;
+    SharedPreferences pref,setting_pref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         passwrd = findViewById(R.id.idetpasswordsignup);
         mobile = findViewById(R.id.idetnumbersignup);
         pref = getSharedPreferences("login_values", MODE_PRIVATE);
-
+        setting_pref = getSharedPreferences("setting_keys", MODE_PRIVATE);
 
         signup.setOnClickListener(this);
 
@@ -62,54 +65,74 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View view) {
         if(view ==signup){
             if (pref.getBoolean("status",false)){
-                String update_values = "UPDATE Data SET Username='"+name.getText().toString()+"' , Password='"+passwrd.getText().toString()+"' , MobileNo='"+mobile.getText().toString()+"'";
-                db.execSQL(update_values);
-                Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
-                final Intent i = new Intent(getApplicationContext(),GameOption.class);
+                if(mobile.getText().toString().length()<10 && mobile.getText().toString().length()>0 ){
+                    Toast.makeText(this, "Invalid Mobile No", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    String update_values = "UPDATE Data SET Username='" + name.getText().toString() + "' , Password='" + passwrd.getText().toString() + "' , MobileNo='" + mobile.getText().toString() + "'";
+                    db.execSQL(update_values);
+                    Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+                    final Intent i = new Intent(getApplicationContext(), GameOption.class);
 
-                Thread thread=new Thread(){
-                    @Override
-                    public void run() {
-                        try {
-                            sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "Update failed", Toast.LENGTH_SHORT).show();
+                    Thread thread = new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                sleep(1500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(), "Update failed", Toast.LENGTH_SHORT).show();
+                            } finally {
+                                startActivity(i);
+                                finish();
+                            }
                         }
-                        finally {
-                            startActivity(i);
-                            finish();
-                        }
-                    }
-                };
-                thread.start();
-
+                    };
+                    thread.start();
+                }
             }
             else {
-                String username = name.getText().toString();
-                String emailid = email.getText().toString();
-                String password = passwrd.getText().toString();
-                String contact = mobile.getText().toString();
+                username = name.getText().toString();
+                emailid = email.getText().toString();
+                password = passwrd.getText().toString();
+                contact = mobile.getText().toString();
 
                 if (!(username.isEmpty() || emailid.isEmpty() || password.isEmpty() || contact.isEmpty())) {
                     String exist = "SELECT * FROM Data WHERE EMail = '" + emailid + "'";
                     Cursor r = db.rawQuery(exist, null);
                     if (r.getCount() != 0) {
                         Snackbar.make(view, "Email Already Exist", Snackbar.LENGTH_LONG).setAction("action", null).show();
-                    } else {
-                        if (contact.length() != 10) {
-                            Toast.makeText(this, "Invalid Mobile No", Toast.LENGTH_SHORT).show();
-                        } else {
-                            String query = "INSERT into Data VALUES (null, '" + username + "', '" + emailid + "', '" + password + "', '" + contact + "')";
-                            db.execSQL(query);
-                            Toast.makeText(this, "Signing Up", Toast.LENGTH_SHORT).show();
-                            SharedPreferences.Editor editor = pref.edit();
-                            editor.putString("email", emailid);
-                            editor.putBoolean("status", true);
-                            editor.apply();
-                            startActivity(new Intent(getApplicationContext(), GameOption.class));
-                            finish();
-                        }
+                    }
+                    else if (invalidemail()){
+                            Toast.makeText(this, "Invalid Email", Toast.LENGTH_SHORT).show();
+                    }
+                    else if (contact.length() != 10) {
+                        Toast.makeText(this, "Invalid Mobile No", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        String query = "INSERT into Data VALUES (null, '" + username + "', '" + emailid + "', '" + password + "', '" + contact + "', 0)";
+                        db.execSQL(query);
+                        Toast.makeText(this, "Signing Up", Toast.LENGTH_SHORT).show();
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString("email", emailid);
+                        editor.putBoolean("status", true);
+                        editor.apply();
+                        final Intent i = new Intent(getApplicationContext(),GameOption.class);
+                        Thread thread=new Thread(){
+                            @Override
+                            public void run() {
+                                try {
+                                    sleep(1500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                    Toast.makeText(getApplicationContext(), "SignUp failed", Toast.LENGTH_SHORT).show();
+                                } finally {
+                                  startActivity(i);
+                                  finish();
+                                }
+                            }
+                        };
+                        thread.start();
                     }
                 } else if (username.isEmpty()) {
                     Toast.makeText(this, "Enter Username", Toast.LENGTH_SHORT).show();
@@ -117,22 +140,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     Toast.makeText(this, "Enter Email", Toast.LENGTH_SHORT).show();
                 } else if (password.isEmpty()) {
                     Toast.makeText(this, "Enter a password", Toast.LENGTH_SHORT).show();
-                } else {
-                    String exist = "SELECT * FROM Data WHERE EMail = '" + emailid + "'";
-                    Cursor r = db.rawQuery(exist, null);
-                    if (r.getCount() != 0) {
-                        Snackbar.make(view, "Email Already Exist", Snackbar.LENGTH_LONG).setAction("action", null).show();
-                    } else {
-                        String query = "INSERT into Data VALUES (null, '" + username + "', '" + emailid + "', '" + password + "', '" + contact + "')";
-                        db.execSQL(query);
-                        Toast.makeText(this, "Signing Up", Toast.LENGTH_SHORT).show();
-                        SharedPreferences.Editor editor = pref.edit();
-                        editor.putString("email", emailid);
-                        editor.putBoolean("status", true);
-                        editor.apply();
-                        startActivity(new Intent(getApplicationContext(), GameOption.class));
-                        finish();
-                    }
                 }
             }
         }
@@ -143,5 +150,19 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         builder.setMessage(message);
         builder.setCancelable(true);
         builder.show();
+    }
+
+    boolean invalidemail(){
+        StringBuffer bufferEmail= new StringBuffer();
+        String buffer_com;
+        StringBuffer buffercheck = new StringBuffer();
+        bufferEmail.append(emailid);
+        buffer_com =".com";
+        buffercheck.append(bufferEmail.subSequence(bufferEmail.length()-4,bufferEmail.length()));
+        buffercheck.toString();
+        if( buffercheck.equals(buffer_com) || bufferEmail.indexOf("@") < 1 || !(bufferEmail.indexOf("@")<bufferEmail.indexOf(".com")-1))
+            return true;
+
+        return false;
     }
 }

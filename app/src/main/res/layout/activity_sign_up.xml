@@ -5,129 +5,154 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".SignUp">
+    tools:context=".SignUp"
+    tools:layout_editor_absoluteY="25dp">
 
     <TextView
         android:id="@+id/idtvname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginStart="16dp"
-        android:text="Username *"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="80dp"
+        android:text="Username*"
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/idetusernamesignup"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/idtvemail"
+        app:layout_constraintEnd_toStartOf="@+id/idetusernamesignup"
+        app:layout_constraintHorizontal_bias="0.638"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.869" />
 
     <TextView
         android:id="@+id/idtvemail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:layout_marginStart="16dp"
-        android:text="EmailID *"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="20dp"
+        android:text="EmailID*"
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/idetemailsignup"
+        app:layout_constraintBottom_toTopOf="@+id/idtvpassword"
+        app:layout_constraintEnd_toStartOf="@+id/idetemailsignup"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/idtvpassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginStart="16dp"
-        android:text="Password *"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="20dp"
+        android:text="Password*"
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/idetpasswordsignup"
+        app:layout_constraintBottom_toTopOf="@+id/idtvmobileno"
+        app:layout_constraintEnd_toStartOf="@+id/idetpasswordsignup"
+        app:layout_constraintHorizontal_bias="0.621"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/idtvmobileno"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="245dp"
         android:text="Mobile No   "
         android:textColor="#ffffff"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/idetnumbersignup"
+        app:layout_constraintHorizontal_bias="0.657"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idetpasswordsignup" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/idetusernamesignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="94dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="80dp"
         android:background="#ffffff"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
+        android:paddingRight="5dp"
         android:textColorLink="@android:color/white"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/idtvname"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/idetemailsignup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.909" />
 
     <EditText
         android:id="@+id/idetemailsignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:background="#ffffff"
         android:ems="10"
         android:hint="Email"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
+        android:paddingRight="5dp"
         android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/idetusernamesignup"
-        app:layout_constraintTop_toBottomOf="@+id/idetusernamesignup" />
+        app:layout_constraintBottom_toTopOf="@+id/idetpasswordsignup"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/idetnumbersignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
+        android:layout_marginEnd="16dp"
         android:background="#ffffff"
         android:ems="10"
         android:hint="Mobile No"
         android:inputType="number"
-        android:textStyle="bold"
+        android:maxLength="10"
+        android:paddingRight="5dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/idtvmobileno"
-        app:layout_constraintStart_toEndOf="@+id/idtvmobileno" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/idetpasswordsignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="16dp"
         android:background="#ffffff"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/idtvpassword"
-        app:layout_constraintTop_toBottomOf="@+id/idetemailsignup" />
+        android:paddingRight="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/idetnumbersignup"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/idbtnsignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="240dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/purple_button"
         android:text="Sign Up"
+        android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idetnumbersignup" />
+        app:layout_constraintTop_toBottomOf="@+id/idetnumbersignup"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>

@@ -21,12 +21,25 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
     Switch vibrate;
     Switch sound;
     Button ok;
-    BackgroundAudioService music;
     Spinner difficulty_level;
     Intent i;
     SharedPreferences setting_pref;
     Vibrator vibrator;
     SharedPreferences.Editor editor;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(setting_pref.getBoolean("volume",false)){
+            startService(new Intent(getApplicationContext(),BackgroundAudioService.class));
+        }
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        stopService(new Intent(getApplicationContext(),BackgroundAudioService.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +71,31 @@ public class Settings extends AppCompatActivity implements View.OnClickListener,
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(setting_pref.getBoolean("fromGameOption",false)){
+            i = new Intent(getApplicationContext(), GameOption.class);
+            editor.putBoolean("fromGameOption",false);
+            editor.apply();
+        }
+        else {
+            i = new Intent(getApplicationContext(), Game.class);
+        }
+        startActivity(i);
+        finish();
+    }
+
+    @Override
     public void onClick(View view) {
          if(view == ok){
-             i = new Intent(Settings.this, Game.class);
-             //i.putExtra("Name:",Game.class);
-             //String s = getIntent().getStringExtra("Name");
+             if(setting_pref.getBoolean("fromGameOption",false)){
+                 i = new Intent(getApplicationContext(), GameOption.class);
+                 editor.putBoolean("fromGameOption",false);
+                 editor.apply();
+             }
+             else {
+                 i = new Intent(getApplicationContext(), Game.class);
+             }
              startActivity(i);
              finish();
         }
